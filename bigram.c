@@ -46,6 +46,17 @@ void computation(const char* set[], int n) {
     }
 }
 
+// Adding Stemming 
+void stem(char* word) {
+    int len = strlen(word);
+    if (len > 4 && strcmp(&word[len - 3], "ing") == 0)
+        word[len - 3] = '\0';
+    else if (len > 3 && strcmp(&word[len - 2], "ed") == 0)
+        word[len - 2] = '\0';
+    else if (len > 2 && word[len - 1] == 's')
+        word[len - 1] = '\0';
+}
+
 // Function to calculate probability of word transition
 double prob(int prev, int curr) {
     if (count[prev] == 0) return 0.0;
@@ -68,6 +79,23 @@ int main() {
 
     computation(corpus, 3);
 
+//Stop word Flter
+    const char* stopwords[] = {
+    "the", "a", "an", "in", "on", "at", "is", "are", "was", "were", "of",
+    "and", "or", "but", "to", "with", "for", "from", "by", "about", "<s>", "</s>"
+};
+int stopwords_count = sizeof(stopwords) / sizeof(stopwords[0]);
+
+int is_stopword(const char* word) {
+    for (int i = 0; i < stopwords_count; i++) {
+        if (strcmp(word, stopwords[i]) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+
+    
     const char* test[] = { "<s>", "they", "play", "in", "a", "big", "garden", "</s>" };
     int len = 8;
 
