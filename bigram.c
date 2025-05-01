@@ -1,30 +1,32 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX 100
-#define MAX_LEN 50
-
-char words[MAX][MAX_LEN];
-int wordCount = 0;
-int freq[MAX][MAX] = {0};
-int count[MAX] = {0};
+char words[100][50];
+int wcount = 0;
+int freq[100][100] = {0};
+int count[100] = {0};
 
 // Function to find index of a word, or add it if not present
 int find(const char* word) {
-    for (int i = 0; i < wordCount; i++) {
+    for (int i = 0; i < wcount; i++) {
         if (strcmp(words[i], word) == 0)
             return i;
     }
-    strcpy(words[wordCount], word);
-    wordCount++;
-    return wordCount - 1;
+    strcpy(words[wcount], word);
+    wcount++;
+    return wcount - 1;
 }
 
 // Function to compute word frequencies
-void computation(const char* set[], int n) {
+void wordfreq(int n) {
+    char sentence[200];
     for (int s = 0; s < n; s++) {
+        printf("Enter sentence %d: ", s + 1);
+        fgets(sentence, sizeof(sentence), stdin);
+        sentence[strcspn(sentence, "\n")] = 0;
+
         char copy[200];
-        strcpy(copy, set[s]);
+        strcpy(copy, sentence);
 
         char* token = strtok(copy, " ");
         int prev = find("<s>");
@@ -40,9 +42,9 @@ void computation(const char* set[], int n) {
             token = strtok(NULL, " ");
         }
 
-        int endix = find("</s>");
-        freq[prev][endix]++;
-        count[endix]++;
+        int endi = find("</s>");
+        freq[prev][endi]++;
+        count[endi]++;
     }
 }
 
@@ -60,21 +62,31 @@ double prob(int prev, int curr) {
 
 // Main function
 int main() {
-    const char* corpus[] = {
-        "there is a big garden",
-        "children play in a garden",
-        "they play inside a garden beautiful garden"
-    };
+    int n;
+    printf("Enter number of sentences: ");
+    scanf("%d", &n);
+    getchar(); // Consume newline character
 
-    computation(corpus, 3);
+    wordfreq(n);
 
-    const char* test[] = { "<s>", "they", "play", "in", "a", "big", "garden", "</s>" };
-    int len = 8;
-
+    char test[200];
+    printf("Enter test sequence: ");
+    fgets(test, sizeof(test), stdin);
+    test[strcspn(test, "\n")] = 0;
+    
+    char* token = strtok(test, " ");
+    char* testword[100];
+    int len = 0;
+    
+    while (token != NULL) {
+        testword[len++] = token;
+        token = strtok(NULL, " ");
+    }
+    
     double total = 1.0;
     for (int i = 1; i < len; i++) {
-        int p = find(test[i - 1]);
-        int c = find(test[i]);
+        int p = find(testword[i - 1]);
+        int c = find(testword[i]);
         double prob_val = prob(p, c);
 
         if (prob_val == 0.0) {
@@ -83,7 +95,7 @@ int main() {
         }
 
         total *= prob_val;
-        printf("P(%s | %s) = %.4f\n", test[i], test[i - 1], prob_val);
+        printf("P(%s | %s) = %.4f\n", testword[i], testword[i - 1], prob_val);
     }
 
     printf("Total Probability: %.4f\n", total);
