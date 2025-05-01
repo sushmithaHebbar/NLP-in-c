@@ -10,17 +10,16 @@ typedef struct {
 tagword utag[100];
 int count = 0;
 
-// Check if word already has a stored tag
 char *usertag(char *word) {
     for (int i = 0; i < count; i++) {
-        if (strcmp(utag[i].word, word) == 0)  // Corrected string comparison
+        if (strcmp(utag[i].word, word) == 0)  
             return utag[i].tag;
     }
     return NULL;
 }
 
-// Store a new word with its tag
-void storestag(char *word, char *tag) {  // Changed return type to void
+void storestag(char *word, char *tag)
+ {  
     if (count < 100) {
         strncpy(utag[count].word, word, sizeof(utag[count].word) - 1);
         strncpy(utag[count].tag, tag, sizeof(utag[count].tag) - 1);
@@ -30,7 +29,7 @@ void storestag(char *word, char *tag) {  // Changed return type to void
     }
 }
 
-// Determine the tag for a word
+
 char *tags(char *word) {
     char *tagexist = usertag(word);
     if (tagexist)
@@ -82,10 +81,10 @@ char *tags(char *word) {
     return "UNK";
 }
 
-// Process a sentence and tag words
+
 void tagsent(char *sent) {
     char word[50];
-    char *wordtkn = strtok(sent, " .,!?");  // Tokenizing words
+    char *wordtkn = strtok(sent, " .,!?"); 
     while (wordtkn != NULL) {
         strcpy(word, wordtkn);
         char *tag = tags(word);
@@ -96,26 +95,26 @@ void tagsent(char *sent) {
             scanf("%s", newtag);
             getchar();
             storestag(word, newtag);
-            tag = newtag;  // Update with new tag
+            tag = newtag;  
         }
         printf("%s/%s ", word, tag);
-        wordtkn = strtok(NULL, " .,!?");  // Next word
+        wordtkn = strtok(NULL, " .,!?");  
     }
     printf("\n");
 }
 
-// Main function to process multiple sentences
+
 int main() {
     int n;
     printf("Enter the number of sentences: ");
     scanf("%d", &n);
-    getchar();  // Consume newline
+    getchar();  
 
     char sent[500];
     for (int i = 0; i < n; i++) {
         printf("Enter sentence %d: ", i + 1);
         fgets(sent, sizeof(sent), stdin);
-        sent[strcspn(sent, "\n")] = 0;  // Remove newline
+        sent[strcspn(sent, "\n")] = 0;  
         printf("Tagged output: ");
         tagsent(sent);
     }
